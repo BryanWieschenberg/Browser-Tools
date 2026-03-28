@@ -1,16 +1,22 @@
 {
   "manifest_version": 3,
-  "name": "Unrecommended",
-  "version": "1.1.0",
-  "description": "Removes algorithmic feeds and distractions from LinkedIn and YouTube so you can browse intentionally.",
-  "permissions": ["scripting", "tabs"],
-  "host_permissions": ["https://*.linkedin.com/*", "https://*.youtube.com/*", "https://*.instagram.com/*"],
+  "name": "Browser Tools",
+  "version": "2.0.0",
+  "description": "A collection of useful browser tools: algorithm blockers, dark mode for Google productivity tools, and Canvas.",
+  "permissions": ["scripting", "tabs", "storage"],
+  "host_permissions": [
+    "https://*.linkedin.com/*",
+    "https://*.youtube.com/*",
+    "https://*.instagram.com/*",
+    "https://docs.google.com/*",
+    "https://*.instructure.com/*"
+  ],
   "background": {
     "service_worker": "background.js"
   },
   "action": {
     "default_popup": "popup.html",
-    "default_title": "Unrecommended",
+    "default_title": "Browser Tools",
     "default_icon": {
       "16": "icons/icon16.png",
       "48": "icons/icon48.png",
@@ -26,6 +32,26 @@
     {
       "matches": ["https://*.youtube.com/*"],
       "js": ["content-youtube.js"],
+      "run_at": "document_start"
+    },
+    {
+      "matches": ["https://docs.google.com/*"],
+      "js": ["content-gdocs-darkmode.js"],
+      "run_at": "document_start"
+    },
+    {
+      "matches": ["https://docs.google.com/spreadsheets/*"],
+      "js": ["content-gsheets-darkmode.js"],
+      "run_at": "document_start"
+    },
+    {
+      "matches": ["https://docs.google.com/presentation/*"],
+      "js": ["content-gslides-darkmode.js"],
+      "run_at": "document_start"
+    },
+    {
+      "matches": ["https://*.instructure.com/*"],
+      "js": ["content-canvas-darkmode.js"],
       "run_at": "document_start"
     }
   ],

@@ -73,7 +73,7 @@
         Feed blocked
       </p>
       <p style="margin:0 0 24px;font-size:14px;color:#555;line-height:1.5;">
-        The algorithmic feed has been removed by <strong>Unrecommended</strong>.<br>
+        The algorithmic feed has been removed by <strong>Browser Tools</strong>.<br>
         Use LinkedIn with intention.
       </p>
       <div style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap;">

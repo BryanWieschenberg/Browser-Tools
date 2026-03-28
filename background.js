@@ -43,3 +43,16 @@ function checkAndRedirect(tabId, url) {
     }
   }
 }
+
+chrome.runtime.onMessage.addListener((msg) => {
+  if (msg.type !== "tool_toggled") return;
+
+  chrome.tabs.query({}, (tabs) => {
+    for (const tab of tabs) {
+      if (!tab.id || !tab.url) continue;
+      try {
+        chrome.tabs.sendMessage(tab.id, msg);
+      } catch (_) {}
+    }
+  });
+});
