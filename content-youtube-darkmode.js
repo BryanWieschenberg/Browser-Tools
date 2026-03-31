@@ -1,39 +1,16 @@
 (function () {
   "use strict";
 
-  const TOOL_KEY = "darkmode_canvas";
-  const STYLE_ID = "browser-tools-canvas-darkmode";
+  const TOOL_KEY = "darkmode_youtube";
+  const STYLE_ID = "browser-tools-youtube-darkmode";
 
   const DARK_CSS = `
-    html {
-      background-color: #1e1e1e !important;
-    }
-
-    html > body {
-      filter: invert(1) hue-rotate(180deg) !important;
-      background-color: #fff !important;
-    }
-
-    img,
-    svg,
-    video,
-    [style*="background-image"],
-    .avatar,
-    .ic-avatar {
+    .html5-video-player video {
       filter: invert(1) hue-rotate(180deg) !important;
     }
   `;
 
   let enabled = false;
-
-  const earlyStyle = document.createElement("style");
-  earlyStyle.id = STYLE_ID;
-  earlyStyle.textContent =
-    DARK_CSS +
-    `
-    html { visibility: hidden !important; }
-  `;
-  (document.head || document.documentElement).appendChild(earlyStyle);
 
   function injectDarkMode() {
     let style = document.getElementById(STYLE_ID);

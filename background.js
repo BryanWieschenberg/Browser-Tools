@@ -1,4 +1,11 @@
+const BLOCKED_URL = chrome.runtime.getURL("blocked.html");
+
 const FEED_PATTERNS = [
+  {
+    site: "tiktok",
+    pattern: /^https:\/\/(www\.)?tiktok\.com(\/.*)?(\?.*)?$/,
+    redirect: BLOCKED_URL,
+  },
   {
     site: "linkedin",
     pattern: /^https:\/\/www\.linkedin\.com\/feed\/(?!notifications\/)(\?.*)?$/,

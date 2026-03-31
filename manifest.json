@@ -8,6 +8,7 @@
     "https://*.linkedin.com/*",
     "https://*.youtube.com/*",
     "https://*.instagram.com/*",
+    "https://*.tiktok.com/*",
     "https://docs.google.com/*",
     "https://*.instructure.com/*"
   ],
@@ -32,6 +33,11 @@
     {
       "matches": ["https://*.youtube.com/*"],
       "js": ["content-youtube.js"],
+      "run_at": "document_start"
+    },
+    {
+      "matches": ["https://*.youtube.com/*"],
+      "js": ["content-youtube-darkmode.js"],
       "run_at": "document_start"
     },
     {

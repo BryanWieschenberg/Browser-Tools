@@ -3,6 +3,7 @@ const DEFAULTS = {
   darkmode_gsheets: false,
   darkmode_gslides: false,
   darkmode_canvas: false,
+  darkmode_youtube: false,
 };
 
 const toggles = document.querySelectorAll("[data-tool]");
