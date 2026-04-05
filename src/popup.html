@@ -1,0 +1,477 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        width: 280px;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: #fafafa;
+        color: #222;
+        padding: 16px;
+      }
+      h1 {
+        font-size: 15px;
+        font-weight: 700;
+        margin-bottom: 12px;
+      }
+      .section {
+        margin-bottom: 14px;
+      }
+      .section:last-child {
+        margin-bottom: 0;
+      }
+      .section-title {
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #999;
+        margin-bottom: 6px;
+      }
+      .tool-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px solid #eee;
+      }
+      .tool-row:last-child {
+        border-bottom: none;
+      }
+      .tool-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .tool-icon {
+        width: 24px;
+        height: 24px;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        font-weight: 700;
+        color: #fff;
+        flex-shrink: 0;
+      }
+      .tool-icon.lockdown {
+        background: #d32f2f;
+      }
+      .lockdown-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 8px;
+      }
+      .lockdown-durations {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+      .lockdown-durations button {
+        flex: 1;
+        min-width: 50px;
+        padding: 6px 4px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        background: #fff;
+        font-size: 12px;
+        font-weight: 600;
+        color: #333;
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+      .lockdown-durations button:hover {
+        background: #fce4ec;
+        border-color: #d32f2f;
+        color: #d32f2f;
+      }
+      .lockdown-active {
+        background: #d32f2f;
+        color: #fff;
+        border-radius: 10px;
+        padding: 10px 12px;
+        text-align: center;
+      }
+      .lockdown-active .timer {
+        font-size: 20px;
+        font-weight: 700;
+        margin: 4px 0 8px;
+        font-variant-numeric: tabular-nums;
+      }
+      .lockdown-active .end-early-btn {
+        background: rgba(255,255,255,0.2);
+        border: 1px solid rgba(255,255,255,0.4);
+        color: #fff;
+        padding: 5px 12px;
+        border-radius: 8px;
+        font-size: 11px;
+        cursor: pointer;
+        font-weight: 600;
+      }
+      .lockdown-active .end-early-btn:hover {
+        background: rgba(255,255,255,0.3);
+      }
+      .breakout-overlay {
+        display: none;
+        background: #d32f2f;
+        color: #fff;
+        border-radius: 10px;
+        padding: 12px;
+        text-align: center;
+      }
+      .breakout-overlay.visible {
+        display: block;
+      }
+      .breakout-overlay p {
+        font-size: 12px;
+        margin-bottom: 6px;
+        line-height: 1.4;
+      }
+      .breakout-overlay .phrase {
+        font-size: 13px;
+        font-weight: 700;
+        background: rgba(0,0,0,0.2);
+        padding: 6px 10px;
+        border-radius: 6px;
+        margin-bottom: 8px;
+        user-select: none;
+      }
+      .breakout-overlay input {
+        width: 100%;
+        padding: 8px;
+        border: none;
+        border-radius: 6px;
+        font-size: 12px;
+        outline: none;
+      }
+      .breakout-overlay .breakout-hint {
+        font-size: 10px;
+        opacity: 0.7;
+        margin-top: 6px;
+      }
+      .whitelist-section {
+        margin-top: 8px;
+      }
+      .whitelist-add {
+        display: flex;
+        gap: 4px;
+        margin-bottom: 6px;
+      }
+      .whitelist-add input {
+        flex: 1;
+        padding: 6px 8px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 11px;
+        outline: none;
+      }
+      .whitelist-add input:focus {
+        border-color: #999;
+      }
+      .whitelist-add button {
+        padding: 6px 10px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        background: #fff;
+        font-size: 11px;
+        font-weight: 600;
+        cursor: pointer;
+        white-space: nowrap;
+      }
+      .whitelist-add button:hover {
+        background: #e8f5e9;
+        border-color: #2e7d32;
+        color: #2e7d32;
+      }
+      .whitelist-list {
+        max-height: 120px;
+        overflow-y: auto;
+      }
+      .whitelist-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 4px 0;
+        border-bottom: 1px solid #f0f0f0;
+        font-size: 11px;
+      }
+      .whitelist-item:last-child {
+        border-bottom: none;
+      }
+      .whitelist-item .wl-label {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        flex: 1;
+        margin-right: 6px;
+        color: #1a73e8;
+        text-decoration: none;
+        font-size: 11px;
+      }
+      .whitelist-item .wl-label:hover {
+        text-decoration: underline;
+      }
+      .whitelist-item .wl-remove {
+        background: none;
+        border: none;
+        color: #d32f2f;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 700;
+        padding: 0 4px;
+        flex-shrink: 0;
+      }
+      .whitelist-empty {
+        font-size: 11px;
+        color: #aaa;
+        font-style: italic;
+      }
+      .tool-icon.linkedin {
+        background: #0a66c2;
+      }
+      .tool-icon.youtube {
+        background: #cc0000;
+      }
+      .tool-icon.instagram {
+        background: #c13584;
+      }
+      .tool-icon.tiktok {
+        background: #111;
+      }
+      .tool-icon.gdocs {
+        background: #4285f4;
+      }
+      .tool-icon.gsheets {
+        background: #0f9d58;
+      }
+      .tool-icon.gslides {
+        background: #f4b400;
+      }
+      .tool-icon.canvas {
+        background: #e03c31;
+      }
+      .tool-icon.invert {
+        background: #555;
+      }
+      .tool-name {
+        font-size: 13px;
+        font-weight: 500;
+      }
+      .status {
+        font-size: 11px;
+        font-weight: 600;
+        color: #2e7d32;
+        background: #e8f5e9;
+        padding: 3px 8px;
+        border-radius: 12px;
+      }
+
+      .toggle {
+        position: relative;
+        width: 36px;
+        height: 20px;
+        flex-shrink: 0;
+      }
+      .toggle input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+      .toggle .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: #ccc;
+        border-radius: 20px;
+        transition: background 0.2s;
+      }
+      .toggle .slider::before {
+        content: "";
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        left: 2px;
+        bottom: 2px;
+        background: #fff;
+        border-radius: 50%;
+        transition: transform 0.2s;
+      }
+      .toggle input:checked + .slider {
+        background: #2e7d32;
+      }
+      .toggle input:checked + .slider::before {
+        transform: translateX(16px);
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Browser Tools</h1>
+
+    <div class="section" id="lockdown-section">
+      <div id="lockdown-inactive">
+        <div class="lockdown-header">
+          <div class="tool-icon lockdown">&#128274;</div>
+          <span class="tool-name">Lockdown Mode</span>
+        </div>
+        <div class="lockdown-durations">
+          <button data-minutes="10">10m</button>
+          <button data-minutes="30">30m</button>
+          <button data-minutes="60">1h</button>
+          <button data-minutes="120">2h</button>
+          <button data-minutes="180">3h</button>
+          <button data-minutes="240">4h</button>
+          <button data-minutes="360">6h</button>
+          <button data-minutes="480">8h</button>
+        </div>
+      </div>
+
+      <div id="lockdown-active" class="lockdown-active" style="display:none">
+        <div style="font-size:11px;font-weight:600;opacity:0.85">LOCKDOWN ACTIVE</div>
+        <div class="timer" id="lockdown-timer">--:--:--</div>
+        <button class="end-early-btn" id="end-early-btn">End Early</button>
+      </div>
+
+      <div id="breakout-overlay" class="breakout-overlay">
+        <p>Type this phrase exactly to end lockdown:</p>
+        <div class="phrase" id="breakout-phrase"></div>
+        <input type="text" id="breakout-input" placeholder="Type the phrase above..." autocomplete="off" spellcheck="false" />
+        <div class="breakout-hint">Must match exactly, including capitalization</div>
+      </div>
+    </div>
+
+    <div class="section whitelist-section">
+      <div class="section-title">YouTube Whitelist</div>
+      <div class="whitelist-add">
+        <input type="text" id="whitelist-url" placeholder="Paste YouTube video or playlist URL" />
+        <button id="whitelist-add-btn">Add</button>
+      </div>
+      <div class="whitelist-list" id="whitelist-list">
+        <div class="whitelist-empty" id="whitelist-empty">No whitelisted URLs</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Dark Mode</div>
+
+      <div class="tool-row">
+        <div class="tool-info">
+          <div class="tool-icon youtube">YT</div>
+          <span class="tool-name">YouTube Video</span>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" data-tool="darkmode_youtube" />
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="tool-row">
+        <div class="tool-info">
+          <div class="tool-icon gdocs">Do</div>
+          <span class="tool-name">Google Docs</span>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" data-tool="darkmode_gdocs" />
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="tool-row">
+        <div class="tool-info">
+          <div class="tool-icon gslides">Sl</div>
+          <span class="tool-name">Google Slides</span>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" data-tool="darkmode_gslides" />
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="tool-row">
+        <div class="tool-info">
+          <div class="tool-icon gsheets">Sh</div>
+          <span class="tool-name">Google Sheets</span>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" data-tool="darkmode_gsheets" />
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="tool-row">
+        <div class="tool-info">
+          <div class="tool-icon canvas">Ca</div>
+          <span class="tool-name">Canvas</span>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" data-tool="darkmode_canvas" />
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="tool-row">
+        <div class="tool-info">
+          <div class="tool-icon invert">INV</div>
+          <span class="tool-name">Invert Colors</span>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" data-tool="invert_colors" />
+          <span class="slider"></span>
+        </label>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Algorithm Blockers</div>
+
+      <div class="tool-row">
+        <div class="tool-info">
+          <div class="tool-icon linkedin">in</div>
+          <span class="tool-name">LinkedIn</span>
+        </div>
+        <span class="status">Active</span>
+      </div>
+
+      <div class="tool-row">
+        <div class="tool-info">
+          <div class="tool-icon youtube">YT</div>
+          <span class="tool-name">YouTube</span>
+        </div>
+        <span class="status">Active</span>
+      </div>
+
+      <div class="tool-row">
+        <div class="tool-info">
+          <div class="tool-icon instagram">IG</div>
+          <span class="tool-name">Instagram</span>
+        </div>
+        <span class="status">Active</span>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Site Blockers</div>
+
+      <div class="tool-row">
+        <div class="tool-info">
+          <div class="tool-icon tiktok">TT</div>
+          <span class="tool-name">TikTok</span>
+        </div>
+        <span class="status">Blocked</span>
+      </div>
+    </div>
+
+    <script src="popup.js"></script>
+  </body>
+</html>

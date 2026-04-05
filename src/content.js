@@ -48,6 +48,7 @@
     );
   }
 
+
   let bannerInjected = false;
 
   function createBanner() {
@@ -94,6 +95,7 @@
 
   function removeAlgorithmicContent() {
     if (isNotificationsPage()) return;
+
     for (const { selector } of REMOVE_TARGETS) {
       document.querySelectorAll(selector).forEach((el) => {
         el.remove();
