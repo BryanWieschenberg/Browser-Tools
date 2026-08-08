@@ -6,14 +6,15 @@ function blockedUrl(site) {
 
 const FEED_PATTERNS = [
   {
-    site: "tiktok",
-    pattern: /^https:\/\/(www\.)?tiktok\.com(\/.*)?(\?.*)?$/,
-    redirect: blockedUrl("TikTok"),
-  },
-  {
     site: "linkedin",
     pattern: /^https:\/\/www\.linkedin\.com\/feed\/?$/,
     redirect: "https://www.linkedin.com/mynetwork/",
+    always: true,
+  },
+  {
+    site: "tiktok",
+    pattern: /^https:\/\/(www\.)?tiktok\.com(\/.*)?(\?.*)?$/,
+    redirect: blockedUrl("TikTok"),
   },
   {
     site: "youtube-home",
@@ -87,7 +88,6 @@ function isYouTubeWhitelisted(url, whitelist) {
 function checkAndRedirect(tabId, url) {
   if (url.startsWith(BLOCKED_URL)) return;
 
-  // Redirect highlighted feed posts to direct post URL
   try {
     const u = new URL(url);
     if (
@@ -103,13 +103,20 @@ function checkAndRedirect(tabId, url) {
     }
   } catch (_) {}
 
-  for (const { pattern, redirect } of FEED_PATTERNS) {
-    if (pattern.test(url)) {
-      chrome.tabs.update(tabId, { url: redirect });
-      return;
+  chrome.storage.sync.get({ blockers_enabled: true }, ({ blockers_enabled }) => {
+    for (const { pattern, redirect, always } of FEED_PATTERNS) {
+      if (!always && !blockers_enabled) continue;
+      if (pattern.test(url)) {
+        chrome.tabs.update(tabId, { url: redirect });
+        return;
+      }
     }
-  }
 
+    checkLockdown(tabId, url);
+  });
+}
+
+function checkLockdown(tabId, url) {
   chrome.storage.sync.get(
     { lockdown_mode: false, lockdown_until: 0, yt_whitelist: [] },
     (settings) => {

@@ -37,6 +37,7 @@ const DEFAULTS = {
   darkmode_pdf: false,
   darkmode_pdf_aspect: DEFAULT_PDF_ASPECT,
   invert_colors: false,
+  blockers_enabled: true,
 };
 
 const BREAKOUT_PHRASES = [
@@ -50,12 +51,22 @@ const BREAKOUT_PHRASES = [
 
 // --- Dark mode toggles ---
 const toggles = document.querySelectorAll("[data-tool]");
+const blockerStatusEls = document.querySelectorAll("[data-blocker-status]");
+
+function renderBlockerStatuses(enabled) {
+  blockerStatusEls.forEach((el) => {
+    const original = el.dataset.blockerStatus === "blocked" ? "Blocked" : "Active";
+    el.textContent = enabled ? original : "Off";
+    el.classList.toggle("off", !enabled);
+  });
+}
 
 chrome.storage.sync.get(DEFAULTS, (settings) => {
   toggles.forEach((input) => {
     const key = input.dataset.tool;
     input.checked = settings[key];
   });
+  renderBlockerStatuses(settings.blockers_enabled);
 });
 
 toggles.forEach((input) => {
@@ -68,6 +79,7 @@ toggles.forEach((input) => {
       tool: key,
       enabled: value,
     });
+    if (key === "blockers_enabled") renderBlockerStatuses(value);
   });
 });
 

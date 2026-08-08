@@ -1,6 +1,9 @@
 (function () {
   "use strict";
 
+  let blockersEnabled = true;
+  let settingsReady = false;
+
   const HOME_ONLY_TARGETS = [
     { selector: "ytd-rich-grid-renderer", label: "home feed grid" },
     { selector: "ytd-rich-shelf-renderer", label: "rich shelf" },
@@ -76,6 +79,7 @@
   }
 
   function removeAlgorithmicContent() {
+    if (!settingsReady || !blockersEnabled) return;
     const targets = isHomePage()
       ? [...HOME_ONLY_TARGETS, ...GLOBAL_TARGETS]
       : GLOBAL_TARGETS;
@@ -88,6 +92,7 @@
   }
 
   function injectBannerIfNeeded() {
+    if (!settingsReady || !blockersEnabled) return;
     if (bannerInjected) return;
     if (!isHomePage()) return;
 
@@ -146,15 +151,26 @@
 
   window.addEventListener("popstate", onNavigate);
 
-  if (document.body) {
+  function init() {
     removeAlgorithmicContent();
     injectBannerIfNeeded();
     startObserver();
-  } else {
-    document.addEventListener("DOMContentLoaded", () => {
-      removeAlgorithmicContent();
-      injectBannerIfNeeded();
-      startObserver();
-    });
   }
+
+  chrome.runtime.onMessage.addListener((msg) => {
+    if (msg.type === "tool_toggled" && msg.tool === "blockers_enabled") {
+      blockersEnabled = msg.enabled;
+      if (blockersEnabled) scheduleCleanup();
+    }
+  });
+
+  chrome.storage.sync.get({ blockers_enabled: true }, ({ blockers_enabled }) => {
+    blockersEnabled = blockers_enabled;
+    settingsReady = true;
+    if (document.body) {
+      init();
+    } else {
+      document.addEventListener("DOMContentLoaded", init);
+    }
+  });
 })();
